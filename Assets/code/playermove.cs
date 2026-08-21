@@ -68,7 +68,15 @@ public class playermove : MonoBehaviour
     {
         if (collision.CompareTag("eagel"))
         {
-            playerHealth--;
+            if(isjumping && rb.linearVelocityY < 0)
+            {
+                Debug.Log("Enemy Destroyed");
+                Destroy(collision.gameObject);
+            }
+            else
+            {
+                playerHealth--;
+            }
         }
     }
 }
