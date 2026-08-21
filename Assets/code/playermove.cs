@@ -1,40 +1,74 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class playermove : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [SerializeField]
     float speed = 5f;
-    float jumpForce = 5f;
+    [SerializeField]
+    float jumpForce = 12f;
+    [SerializeField]
+    int playerHealth = 3;
     SpriteRenderer spriteRenderer;
+    Rigidbody2D rb;
+    Collision2D collision2D;
+    bool isjumping;
     public Animator animator;
     void Start()
     {
-          spriteRenderer = GetComponent<SpriteRenderer>();
-          animator = GetComponent<Animator>();
+        isjumping = false;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+        //collision2D = GetComponent<Collision2D>();
     }
 
     // Update is called once per frame
     void Update()
     {
-       
-        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
+        if(Input.GetAxis("Horizontal") == 0)
         {
-            transform.Translate(new Vector3(speed * Time.deltaTime, 0, 0));
+            animator.SetTrigger("ide");
+            animator.ResetTrigger("run");
+        }
+        else if(Input.GetAxis("Horizontal") != 0 )
+        {
+            animator.SetTrigger("run");
+            animator.ResetTrigger("ide");
+            animator.ResetTrigger("jump");
             spriteRenderer.flipX = false;
-            animator.SetTrigger("run");
+            if (Input.GetAxis("Horizontal") < 0)
+            {
+                spriteRenderer.flipX = true;
+            }
         }
-        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
+        if (Input.GetButtonDown("Jump") && !isjumping)
         {
-            transform.Translate(new Vector3(-speed * Time.deltaTime, 0, 0));
-            spriteRenderer.flipX = true;
-            animator.SetTrigger("run");
-        }
-        if (Input.GetKey(KeyCode.Space))
-        {
-            transform.Translate(new Vector3(0, jumpForce * Time.deltaTime, 0));
+            //Debug.Log(Mathf.Abs(rb.linearVelocityY));
             animator.SetTrigger("jump");
+            animator.ResetTrigger("run");
+            animator.ResetTrigger("ide");
+            rb.linearVelocity = new Vector2(0, jumpForce);
+            isjumping = true;
 
         }
-        animator.SetTrigger("ide");
+        if(Mathf.Abs(rb.linearVelocityY) < 0.1f && isjumping)
+        {
+            isjumping = false;
+        }
+    }
+     private void FixedUpdate()
+    {
+        rb.linearVelocity = new Vector2(speed * Input.GetAxis("Horizontal"), rb.linearVelocityY);
+       
+
+    }
+     void  OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("eagel"))
+        {
+            playerHealth--;
+        }
     }
 }
