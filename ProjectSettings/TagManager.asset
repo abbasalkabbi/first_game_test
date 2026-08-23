@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - eagel
+  - pig
   layers:
   - Default
   - TransparentFX

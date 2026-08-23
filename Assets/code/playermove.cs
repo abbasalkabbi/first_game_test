@@ -1,6 +1,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
-
+using UnityEngine.UI;
+using TMPro;
 public class playermove : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -10,13 +11,18 @@ public class playermove : MonoBehaviour
     float jumpForce = 12f;
     [SerializeField]
     int playerHealth = 3;
+    [SerializeField]
+    Transform Canvas;
     SpriteRenderer spriteRenderer;
     Rigidbody2D rb;
     Collision2D collision2D;
     bool isjumping;
     public Animator animator;
+    TextMeshProUGUI TexplayerHealth;
     void Start()
     {
+         TexplayerHealth =Canvas.Find("TexplayerHealth").GetComponent<TextMeshProUGUI>();
+        TexplayerHealth.text = playerHealth.ToString();
         isjumping = false;
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
@@ -76,6 +82,23 @@ public class playermove : MonoBehaviour
             else
             {
                 playerHealth--;
+                TexplayerHealth.text = playerHealth.ToString();
+            }
+        }
+    }
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("pig"))
+        {
+            if (isjumping && rb.linearVelocityY < 0)
+            {
+                Debug.Log("Enemy Destroyed");
+                Destroy(collision.gameObject);
+            }
+            else
+            {
+                playerHealth--;
+                TexplayerHealth.text = playerHealth.ToString();
             }
         }
     }
