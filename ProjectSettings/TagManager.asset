@@ -6,6 +6,7 @@ TagManager:
   tags:
   - eagel
   - pig
+  - gem
   layers:
   - Default
   - TransparentFX

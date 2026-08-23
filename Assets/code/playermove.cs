@@ -12,6 +12,8 @@ public class playermove : MonoBehaviour
     [SerializeField]
     int playerHealth = 3;
     [SerializeField]
+    int playerScore = 0;
+    [SerializeField]
     Transform Canvas;
     SpriteRenderer spriteRenderer;
     Rigidbody2D rb;
@@ -19,10 +21,13 @@ public class playermove : MonoBehaviour
     bool isjumping;
     public Animator animator;
     TextMeshProUGUI TexplayerHealth;
+    TextMeshProUGUI TexplayerScore;
     void Start()
     {
          TexplayerHealth =Canvas.Find("TexplayerHealth").GetComponent<TextMeshProUGUI>();
-        TexplayerHealth.text = playerHealth.ToString();
+        playerHealthTextUpdate();
+        TexplayerScore = Canvas.Find("TexplayerScore").GetComponent<TextMeshProUGUI>();
+        playerScoreTextUpdate();
         isjumping = false;
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
@@ -70,19 +75,22 @@ public class playermove : MonoBehaviour
        
 
     }
-     void  OnTriggerEnter2D(Collider2D collision)
+    // Trigger event for collision with enemies
+    void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("eagel"))
         {
             if(isjumping && rb.linearVelocityY < 0)
             {
+                playerScore += 40;
+                playerScoreTextUpdate();
                 Debug.Log("Enemy Destroyed");
                 Destroy(collision.gameObject);
             }
             else
             {
                 playerHealth--;
-                TexplayerHealth.text = playerHealth.ToString();
+                playerHealthTextUpdate();
             }
         }
     }
@@ -92,14 +100,30 @@ public class playermove : MonoBehaviour
         {
             if (isjumping && rb.linearVelocityY < 0)
             {
+                playerScore += 30;
+                playerScoreTextUpdate();
                 Debug.Log("Enemy Destroyed");
                 Destroy(collision.gameObject);
             }
             else
             {
                 playerHealth--;
-                TexplayerHealth.text = playerHealth.ToString();
+                playerHealthTextUpdate();
             }
         }
+        if (collision.gameObject.CompareTag("gem"))
+        {
+            playerScore += 50;
+            playerScoreTextUpdate();
+            Destroy(collision.gameObject);
+        }
+    }
+    void playerHealthTextUpdate()
+    {
+        TexplayerHealth.text = playerHealth.ToString();
+    }
+    void playerScoreTextUpdate()
+    {
+        TexplayerScore.text ="Score : "+ playerScore.ToString();
     }
 }
