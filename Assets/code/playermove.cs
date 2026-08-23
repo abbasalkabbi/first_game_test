@@ -14,6 +14,14 @@ public class playermove : MonoBehaviour
     [SerializeField]
     int playerScore = 0;
     [SerializeField]
+    Transform SoundCollectedItems;
+    [SerializeField]
+    Transform SoundJump;
+    [SerializeField]
+    Transform SoundHit;
+    [SerializeField]
+    Transform SoundDeath;
+    [SerializeField]
     Transform Canvas;
     SpriteRenderer spriteRenderer;
     Rigidbody2D rb;
@@ -57,6 +65,7 @@ public class playermove : MonoBehaviour
         if (Input.GetButtonDown("Jump") && !isjumping)
         {
             //Debug.Log(Mathf.Abs(rb.linearVelocityY));
+            PlayJumpSound(rb.gameObject.transform.position);
             animator.SetTrigger("jump");
             animator.ResetTrigger("run");
             animator.ResetTrigger("ide");
@@ -82,6 +91,7 @@ public class playermove : MonoBehaviour
         {
             if(isjumping && rb.linearVelocityY < 0)
             {
+                PlayDeathSound(collision.gameObject.transform.position);
                 playerScore += 40;
                 playerScoreTextUpdate();
                 Debug.Log("Enemy Destroyed");
@@ -89,6 +99,7 @@ public class playermove : MonoBehaviour
             }
             else
             {
+                PlayHitSound(collision.gameObject.transform.position);
                 playerHealth--;
                 playerHealthTextUpdate();
             }
@@ -101,18 +112,21 @@ public class playermove : MonoBehaviour
             if (isjumping && rb.linearVelocityY < 0)
             {
                 playerScore += 30;
+                PlayDeathSound(collision.gameObject.transform.position);
                 playerScoreTextUpdate();
                 Debug.Log("Enemy Destroyed");
                 Destroy(collision.gameObject);
             }
             else
             {
+                PlayHitSound(collision.gameObject.transform.position);
                 playerHealth--;
                 playerHealthTextUpdate();
             }
         }
         if (collision.gameObject.CompareTag("gem"))
         {
+            PlayCollectedItemsSound(collision.gameObject.transform.position);
             playerScore += 50;
             playerScoreTextUpdate();
             Destroy(collision.gameObject);
@@ -125,5 +139,29 @@ public class playermove : MonoBehaviour
     void playerScoreTextUpdate()
     {
         TexplayerScore.text ="Score : "+ playerScore.ToString();
+    }
+    void PlayCollectedItemsSound(Vector3 itemPos)
+    {
+        Transform sound= Instantiate(SoundCollectedItems, itemPos,new Quaternion());
+        sound.gameObject.SetActive(true);
+        Destroy(sound.gameObject, sound.gameObject.GetComponent<AudioSource>().clip.length);
+    }
+    void PlayJumpSound(Vector3 soundPos)
+    {
+        Transform sound = Instantiate(SoundJump, soundPos, new Quaternion());
+        sound.gameObject.SetActive(true);
+        Destroy(sound.gameObject, sound.gameObject.GetComponent<AudioSource>().clip.length);
+    }
+    void PlayHitSound(Vector3 soundPos)
+    {
+        Transform sound = Instantiate(SoundHit, soundPos, new Quaternion());
+        sound.gameObject.SetActive(true);
+        Destroy(sound.gameObject, sound.gameObject.GetComponent<AudioSource>().clip.length);
+    }
+    void PlayDeathSound(Vector3 soundPos)
+    {
+        Transform sound = Instantiate(SoundDeath, soundPos, new Quaternion());
+        sound.gameObject.SetActive(true);
+        Destroy(sound.gameObject, sound.gameObject.GetComponent<AudioSource>().clip.length);
     }
 }
