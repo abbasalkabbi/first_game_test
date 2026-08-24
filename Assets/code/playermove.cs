@@ -1,7 +1,8 @@
+using TMPro;
 using Unity.VisualScripting;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 public class playermove : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -23,6 +24,10 @@ public class playermove : MonoBehaviour
     Transform SoundDeath;
     [SerializeField]
     Transform Canvas;
+    [SerializeField]
+    Transform EnemyDeath;
+    [SerializeField]
+    Transform ItemFx;
     SpriteRenderer spriteRenderer;
     Rigidbody2D rb;
     Collision2D collision2D;
@@ -56,6 +61,7 @@ public class playermove : MonoBehaviour
             animator.SetTrigger("run");
             animator.ResetTrigger("ide");
             animator.ResetTrigger("jump");
+            animator.ResetTrigger("hurt");
             spriteRenderer.flipX = false;
             if (Input.GetAxis("Horizontal") < 0)
             {
@@ -69,6 +75,7 @@ public class playermove : MonoBehaviour
             animator.SetTrigger("jump");
             animator.ResetTrigger("run");
             animator.ResetTrigger("ide");
+            animator.ResetTrigger("hurt");
             rb.linearVelocity = new Vector2(0, jumpForce);
             isjumping = true;
 
@@ -92,6 +99,7 @@ public class playermove : MonoBehaviour
             if(isjumping && rb.linearVelocityY < 0)
             {
                 PlayDeathSound(collision.gameObject.transform.position);
+                EnemyDeathFx(collision.gameObject.transform.position);
                 playerScore += 40;
                 playerScoreTextUpdate();
                 Debug.Log("Enemy Destroyed");
@@ -100,6 +108,10 @@ public class playermove : MonoBehaviour
             else
             {
                 PlayHitSound(collision.gameObject.transform.position);
+                animator.ResetTrigger("run");
+                animator.ResetTrigger("ide");
+                animator.ResetTrigger("jump");
+                animator.SetTrigger("hurt");
                 playerHealth--;
                 playerHealthTextUpdate();
             }
@@ -113,6 +125,7 @@ public class playermove : MonoBehaviour
             {
                 playerScore += 30;
                 PlayDeathSound(collision.gameObject.transform.position);
+                EnemyDeathFx(collision.gameObject.transform.position);
                 playerScoreTextUpdate();
                 Debug.Log("Enemy Destroyed");
                 Destroy(collision.gameObject);
@@ -120,6 +133,11 @@ public class playermove : MonoBehaviour
             else
             {
                 PlayHitSound(collision.gameObject.transform.position);
+                animator.ResetTrigger("run");
+                animator.ResetTrigger("ide");
+                animator.ResetTrigger("jump");
+                animator.SetTrigger("hurt");
+                
                 playerHealth--;
                 playerHealthTextUpdate();
             }
@@ -127,6 +145,7 @@ public class playermove : MonoBehaviour
         if (collision.gameObject.CompareTag("gem"))
         {
             PlayCollectedItemsSound(collision.gameObject.transform.position);
+            GetItemFx(collision.gameObject.transform.position);
             playerScore += 50;
             playerScoreTextUpdate();
             Destroy(collision.gameObject);
@@ -163,5 +182,17 @@ public class playermove : MonoBehaviour
         Transform sound = Instantiate(SoundDeath, soundPos, new Quaternion());
         sound.gameObject.SetActive(true);
         Destroy(sound.gameObject, sound.gameObject.GetComponent<AudioSource>().clip.length);
+    }
+    void EnemyDeathFx(Vector3 fxPos)
+    {
+        Transform fx = Instantiate(EnemyDeath, fxPos, new Quaternion());
+        fx.gameObject.SetActive(true);
+        Destroy(fx.gameObject, 0.5f);
+    }
+    void GetItemFx(Vector3 fxPos)
+    {
+        Transform fx = Instantiate(ItemFx, fxPos, new Quaternion());
+        fx.gameObject.SetActive(true);
+        Destroy(fx.gameObject, 0.5f);
     }
 }
