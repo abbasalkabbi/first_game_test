@@ -1,7 +1,8 @@
-using TMPro;
+
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 public class playermove : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -36,7 +37,7 @@ public class playermove : MonoBehaviour
     TextMeshProUGUI TexplayerScore;
     void Start()
     {
-         TexplayerHealth =Canvas.Find("TexplayerHealth").GetComponent<TextMeshProUGUI>();
+        TexplayerHealth =Canvas.Find("TexplayerHealth").GetComponent<TextMeshProUGUI>();
         playerHealthTextUpdate();
         TexplayerScore = Canvas.Find("TexplayerScore").GetComponent<TextMeshProUGUI>();
         playerScoreTextUpdate();
